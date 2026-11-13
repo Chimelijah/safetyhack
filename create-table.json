@@ -1,0 +1,10 @@
+{
+  "TableName": "scope",
+  "AttributeDefinitions": [
+    {"AttributeName": "target", "AttributeType": "S"}
+  ],
+  "KeySchema": [
+    {"AttributeName": "target", "KeyType": "HASH"}
+  ],
+  "BillingMode": "PAY_PER_REQUEST"
+}
