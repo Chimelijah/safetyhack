@@ -30,7 +30,13 @@ aws --endpoint-url=$ENDPOINT lambda create-function \
   --timeout 10
 
 echo "=== waiting for it to go active ==="
-sleep 10
-aws --endpoint-url=$ENDPOINT lambda get-function --function-name safety-gate --query "Configuration.State"
+for i in $(seq 1 30); do
+  STATE=$(aws --endpoint-url=$ENDPOINT lambda get-function --function-name safety-gate --query "Configuration.State" --output text)
+  echo "state: $STATE"
+  [ "$STATE" = "Active" ] && break
+  [ "$STATE" = "Failed" ] && { echo "function failed to deploy"; exit 1; }
+  sleep 2
+done
+[ "$STATE" = "Active" ] || { echo "timed out waiting for Active"; exit 1; }
 
 echo "=== done. Run ./test.sh to try it. ==="
