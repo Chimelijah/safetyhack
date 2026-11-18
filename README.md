@@ -37,7 +37,17 @@ Everything is tested entirely on LocalStack. No real AWS account is needed.
    ./test.sh
    ```
 
-5. Clean up when done:
+5. Try a caller that obeys the gate (runs a command only if the gate allows it):
+
+   ```bash
+   aws --endpoint-url=http://localhost:4566 dynamodb put-item --table-name scope \
+     --item '{"target": {"S": "127.0.0.1"}, "authorized": {"BOOL": true}}'
+   ./run-with-gate.py ping 127.0.0.1                      # allowed, runs the ping
+   ./run-with-gate.py ping unknown-host.evil.example      # blocked, nothing runs
+   ./run-with-gate.py --dry-run ping 127.0.0.1            # shows the argv only
+   ```
+
+6. Clean up when done:
 
    ```bash
    ./cleanup.sh
